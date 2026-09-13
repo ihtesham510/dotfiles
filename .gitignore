@@ -5,6 +5,8 @@
 !.config/rofi
 !.config/ghostty
 !.config/waybar
+!.config/yazi
+!.config/kitty
 
 !.local/share
 .local/share/*
