@@ -1,0 +1,114 @@
+[mgr]
+keymap = [
+  # Navigation
+  { on = "k", run = "arrow -1", desc = "Move cursor up" },
+  { on = "j", run = "arrow 1", desc = "Move cursor down" },
+  { on = "h", run = "leave", desc = "Go back to parent directory" },
+  { on = "l", run = "enter", desc = "Enter the child directory" },
+  { on = "<Up>", run = "arrow -1" },
+  { on = "<Down>", run = "arrow 1" },
+  { on = [
+    "g",
+    "g",
+  ], run = "arrow top", desc = "Move cursor to the top" },
+  { on = "G", run = "arrow bot", desc = "Move cursor to the bottom" },
+  { on = [
+    "g",
+    "h",
+  ], run = "cd ~", desc = "Go to home directory" },
+
+  # Selection
+  { on = "<Space>", run = [
+    "select --state=none",
+    "arrow 1",
+  ], desc = "Toggle selection" },
+  { on = "v", run = "visual_mode", desc = "Enter visual mode" },
+  { on = "V", run = "visual_mode --unset", desc = "Enter visual mode (unset)" },
+  { on = "<C-a>", run = "select_all --state=true", desc = "Select all files" },
+  { on = "<C-r>", run = "select_all --state=none", desc = "Invert selection" },
+
+  # Operations
+  { on = "o", run = "open", desc = "Open selected file(s)" },
+  { on = "O", run = "open --interactive", desc = "Open with interactive UI" },
+  { on = "<Enter>", run = "open", desc = "Open selected" },
+  { on = "y", run = "yank", desc = "Yank (copy) selected files" },
+  { on = "x", run = "yank --cut", desc = "Cut selected files" },
+  { on = "p", run = "paste", desc = "Paste files" },
+  { on = "P", run = "paste --force", desc = "Paste (overwrite)" },
+  { on = "d", run = "remove", desc = "Move to trash" },
+  { on = "D", run = "remove --permanently", desc = "Permanently delete" },
+  { on = "a", run = "create", desc = "Create a file/directory" },
+  { on = "r", run = "rename", desc = "Rename selected file" },
+  { on = [
+    "c",
+    "c",
+  ], run = "copy path", desc = "Copy file path" },
+
+  # View / misc
+  { on = ".", run = "hidden toggle", desc = "Toggle hidden files" },
+  { on = "s", run = "search do --via=rg", desc = "Search via ripgrep" },
+  { on = "f", run = "filter", desc = "Filter files in cwd" },
+  { on = "z", run = "plugin zoxide", desc = "Jump via zoxide" },
+  { on = "<Tab>", run = "tab_create --current", desc = "New tab" },
+  { on = "[", run = "tab_switch -1 --relative", desc = "Previous tab" },
+  { on = "]", run = "tab_switch 1 --relative", desc = "Next tab" },
+  { on = "T", run = "tasks_show", desc = "Show task manager" },
+  { on = "~", run = "plugin help", desc = "Open help" },
+  { on = "q", run = "quit", desc = "Quit" },
+]
+
+[tasks]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Close task manager" },
+  { on = "w", run = "cancel", desc = "Cancel selected task" },
+  { on = "k", run = "arrow -1" },
+  { on = "j", run = "arrow 1" },
+]
+
+[spot]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Close spotter" },
+  { on = "k", run = "arrow -1" },
+  { on = "j", run = "arrow 1" },
+]
+
+[pick]
+keymap = [
+  { on = "k", run = "arrow -1" },
+  { on = "j", run = "arrow 1" },
+  { on = "<Enter>", run = "close --submit", desc = "Confirm choice" },
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+]
+
+[input]
+keymap = [
+  { on = "<Enter>", run = "close --submit", desc = "Confirm input" },
+  { on = "<Esc>", run = "close", desc = "Cancel input" },
+  { on = "<C-c>", run = "close", desc = "Cancel input" },
+  { on = "<Left>", run = "move -1" },
+  { on = "<Right>", run = "move 1" },
+  { on = "<Backspace>", run = "backspace" },
+]
+
+[confirm]
+keymap = [
+  { on = "<Enter>", run = "confirm", desc = "Confirm" },
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+  { on = "n", run = "close", desc = "No" },
+  { on = "y", run = "confirm", desc = "Yes" },
+]
+
+[cmp]
+keymap = [
+  { on = "<Tab>", run = "trigger", desc = "Trigger completion" },
+  { on = "<Enter>", run = "close --submit", desc = "Confirm" },
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+]
+
+[help]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Close help" },
+  { on = "k", run = "arrow -1" },
+  { on = "j", run = "arrow 1" },
+  { on = "/", run = "filter", desc = "Filter keymaps" },
+]
