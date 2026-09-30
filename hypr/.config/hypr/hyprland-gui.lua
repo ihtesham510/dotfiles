@@ -2,17 +2,25 @@
 
 -- Settings
 hl.config({
-    general = {
-        border_size = 2,
-    },
+	general = {
+		border_size = 2,
+	},
 })
 
 -- Monitors
 hl.monitor({
-    output = "HDMI-A-2",
-    disabled = false,
-    mode = "1440x900@74.98Hz",
-    position = "0x0",
-    scale = 1,
-    cm = "srgb",
+	output = "DP-1",
+	disabled = false,
+	mode = "1920x1080@60Hz",
+	position = "0x0",
+	cm = "srgb",
+})
+
+hl.monitor({
+	output = "HDMI-A-2",
+	disabled = false,
+	mode = "1440x900@74.98Hz",
+	position = "1920x300",
+	scale = 1,
+	cm = "srgb",
 })
