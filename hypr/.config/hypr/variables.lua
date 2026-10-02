@@ -90,10 +90,13 @@ return {
 	kbWindowIncreaseWidth = { "SUPER + Equal", "SUPER + ALT + Right" },
 	kbWindowDecreaseHeight = { "SUPER + ALT + Minus", "SUPER + ALT + Up" },
 	kbWindowIncreaseHeight = { "SUPER + ALT + Equal", "SUPER + ALT + Down" },
+	-- monitor actions
+	kbMoveWsToNextMonitor = { "SUPER + bracketright" },
+	kbMoveWsToPrevMonitor = { "SUPER + bracketleft" },
 
 	kbMoveWindow = "SUPER + Z",
 	kbResizeWindow = "SUPER + X",
-	kbCenterWindow = "SUPER + Return",
+	kbCenterWindow = "SUPER + Backslash",
 	kbNormalizeWindow = "CTRL + SUPER + ALT + Backslash",
 	kbWindowPip = "SUPER + ALT + Backslash",
 	kbPinWindow = "SUPER + P",

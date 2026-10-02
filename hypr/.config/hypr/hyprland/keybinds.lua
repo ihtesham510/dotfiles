@@ -151,6 +151,10 @@ create_bind(vars.kbMusicWs, fn.toggle("music"))
 create_bind(vars.kbCommunicationWs, fn.toggle("communication"))
 create_bind(vars.kbTodoWs, fn.toggle("todo"))
 
+-- Monitor Actions
+create_bind(vars.kbMoveWsToNextMonitor, hl.dsp.workspace.move({ monitor = "+1" }))
+create_bind(vars.kbMoveWsToPrevMonitor, hl.dsp.workspace.move({ monitor = "-1" }))
+
 -- Apps
 create_bind(vars.kbTerminal, hl.dsp.exec_cmd(vars.terminal))
 create_bind(vars.kbBrowser, hl.dsp.exec_cmd(vars.browser))
