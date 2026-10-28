@@ -96,9 +96,9 @@ return {
 
 	kbMoveWindow = "SUPER + Z",
 	kbResizeWindow = "SUPER + X",
-	kbCenterWindow = "SUPER + Backslash",
-	kbNormalizeWindow = "CTRL + SUPER + ALT + Backslash",
-	kbWindowPip = "SUPER + ALT + Backslash",
+	kbCenterWindow = "ALT + BackSpace",
+	kbNormalizeWindow = "ALT + BackSpace",
+	kbWindowPip = "SUPER + ALT + BackSpace",
 	kbPinWindow = "SUPER + P",
 	kbWindowFullscreen = "SUPER + F",
 	kbWindowBorderedFullscreen = "SUPER + ALT + F",
@@ -132,7 +132,7 @@ return {
 	kbMediaToggle = "CTRL + SUPER + Space",
 	kbMediaNext = "CTRL + SUPER + Equal",
 	kbMediaPrev = "CTRL + SUPER + Minus",
-	kbMediaStop = "CTRL + SUPER + Backspace",
+	kbMediaStop = "CTRL + SUPER + BackSpace",
 	kbVolumeMute = "SUPER + SHIFT + M",
 
 	-- Misc
