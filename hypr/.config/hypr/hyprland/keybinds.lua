@@ -170,6 +170,7 @@ create_bind(vars.kbRecord, hl.dsp.exec_cmd("caelestia record"))
 create_bind(vars.kbRecordSound, hl.dsp.exec_cmd("caelestia record -s"))
 create_bind(vars.kbRecordRegion, hl.dsp.exec_cmd("caelestia record -r"))
 create_bind(vars.kbColorPicker, hl.dsp.exec_cmd("hyprpicker -a"))
+create_bind(vars.kbWallpaperChanger, hl.dsp.exec_cmd("qs ipc call notch open wallpaper"))
 
 -- Brightness
 create_bind("XF86MonBrightnessUp", hl.dsp.global("caelestia:brightnessUp"), locked)

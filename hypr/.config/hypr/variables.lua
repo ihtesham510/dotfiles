@@ -144,6 +144,7 @@ return {
 	kbLock = "SUPER + L",
 	kbRestoreLock = "SUPER + ALT + L",
 	kbSleep = "SUPER + SHIFT + L",
+	kbWallpaperChanger = "SUPER + U",
 
 	-- Clipboard and emoji picker
 	kbClipboard = "SUPER + V",
