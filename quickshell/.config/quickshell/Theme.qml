@@ -1,26 +1,45 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import qs.services
 
 // Shared visual constants. One place to change colors, sizes and timings.
+//
+// Colours are Material 3 roles taken from the wallpaper by matugen (see
+// services/Colours.qml). The second argument of each lookup is the old
+// hand-picked colour, used until a palette exists, so the shell is never
+// unstyled.
 Singleton {
-    readonly property color background: "black"
+    // Notch / panel fill. surfaceContainer is the elevated surface Material
+    // uses for floating sheets.
+    readonly property color background: Colours.role("surface_container", "black")
 
-    readonly property color foreground: "white"
-    readonly property color muted: "#a0a0a0"
-    readonly property color subtle: "#cccccc"
+    readonly property color foreground: Colours.role("on_surface", "white")
+    readonly property color muted: Colours.role("on_surface_variant", "#a0a0a0")
+    readonly property color subtle: Colours.role("on_surface", "#cccccc")
 
-    readonly property color inactive: "#3a3a3a"
-    readonly property color occupied: "#888888"
+    readonly property color inactive: Colours.role("outline_variant", "#3a3a3a")
+    readonly property color occupied: Colours.role("outline", "#888888")
 
-    readonly property color success: "#98c379"
-    readonly property color danger: "#e06c75"
+    // Semantic colours. success is a custom matugen colour blended towards the
+    // wallpaper hue; error is the Material error role.
+    readonly property color success: Colours.role("success", "#98c379")
+    readonly property color danger: Colours.role("error", "#e06c75")
 
     // Surfaces used by the launcher / future panels
-    readonly property color surface: "#1c1c1e"
-    readonly property color surfaceHover: "#2a2a2d"
-    readonly property color outline: "#2f2f33"
-    readonly property color outlineFocus: "#4a4a50"
+    readonly property color surface: Colours.role("surface_container_high", "#1c1c1e")
+    readonly property color surfaceHover: Colours.role("surface_container_highest", "#2a2a2d")
+    readonly property color outline: Colours.role("outline_variant", "#2f2f33")
+    readonly property color outlineFocus: Colours.role("primary", "#4a4a50")
+
+    // Material accents, for anything that should read as "selected".
+    readonly property color primary: Colours.role("primary", "white")
+    readonly property color onPrimary: Colours.role("on_primary", "black")
+    readonly property color secondary: Colours.role("secondary", "#cccccc")
+    readonly property color tertiary: Colours.role("tertiary", "#cccccc")
+    readonly property color error: Colours.role("error", "#e06c75")
+    readonly property color surfaceLow: Colours.role("surface_container_low", "#1c1c1e")
+    readonly property color surfaceHighest: Colours.role("surface_container_highest", "#2f2f33")
 
     // Notch geometry
     readonly property int collapsedWidth: 260

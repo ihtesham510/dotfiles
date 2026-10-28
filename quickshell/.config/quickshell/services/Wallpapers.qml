@@ -13,7 +13,8 @@ Singleton {
 
     readonly property string directory: Quickshell.env("HOME") + "/Pictures/Wallpapers"
     readonly property string defaultWallpaper: root.directory + "/anime girl.jpg"
-    readonly property string stateFile: Quickshell.env("HOME") + "/.cache/quickshell/wallpaper"
+    readonly property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell"
+    readonly property string stateFile: root.cacheDir + "/wallpaper"
 
     property string current: root.defaultWallpaper
 
@@ -29,14 +30,33 @@ Singleton {
                 const path = text.trim();
                 if (path.length > 0)
                     root.current = path;
+                root.applyColours();
             }
         }
     }
 
+    // Rebuild the Material palette for the current wallpaper. matugen writes
+    // ~/.cache/quickshell/colors.json (read by services/Colours.qml) and
+    // ~/.config/hypr/scheme/current.lua, then Hyprland is told to reload so
+    // window borders follow the wallpaper too. Missing matugen is not an
+    // error: the shell just keeps its fallback colours.
+    Process {
+        id: colours
+        command: ["sh", "-c", "mkdir -p \"$1\"; command -v matugen >/dev/null 2>&1 || exit 0; " + "matugen image \"$2\" --mode dark --type scheme-smart --source-color-index 0 >/dev/null 2>&1 || exit 1; " + "command -v hyprctl >/dev/null 2>&1 && hyprctl reload >/dev/null 2>&1", "sh", root.cacheDir, root.current]
+
+        onExited: Colours.refresh()
+    }
+
+    function applyColours(): void {
+        if (root.current.length === 0)
+            return;
+        colours.running = false;
+        colours.running = true;
+    }
+
     Process {
         id: saveState
-        command: ["sh", "-c", "mkdir -p \"$(dirname \"$2\")\" && printf '%s' \"$1\" > \"$2\"",
-                  "sh", root.current, root.stateFile]
+        command: ["sh", "-c", "mkdir -p \"$(dirname \"$2\")\" && printf '%s' \"$1\" > \"$2\"", "sh", root.current, root.stateFile]
         running: false
     }
 
@@ -54,7 +74,10 @@ Singleton {
     function all(): var {
         const out = [];
         for (let i = 0; i < files.count; i++)
-            out.push({ name: files.get(i, "fileName"), path: files.get(i, "filePath") });
+            out.push({
+                name: files.get(i, "fileName"),
+                path: files.get(i, "filePath")
+            });
         return out;
     }
 
@@ -72,5 +95,6 @@ Singleton {
             return;
         root.current = path;
         saveState.running = true;
+        root.applyColours();
     }
 }
