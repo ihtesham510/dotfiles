@@ -10,6 +10,10 @@ return {
   config = function()
     local servers = {
       sqlls = {},
+      qmlls = {
+        cmd = { 'qmlls6' },
+        filetypes = { 'qml', 'qmljs' },
+      },
       pyright = {},
       clangd = {},
       dockerls = {},
