@@ -49,7 +49,7 @@ end
 
 -- Launcher
 local launcher_default = normalise_keybind("SUPER + SUPER_L")
-create_bind(vars.kbLauncher, hl.dsp.global("caelestia:launcher"), function(key)
+create_bind(vars.kbLauncher, hl.dsp.exec_cmd("qs ipc call notch toggle"), function(key)
 	return normalise_keybind(key) == launcher_default and release or nil
 end)
 
