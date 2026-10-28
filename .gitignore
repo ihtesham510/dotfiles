@@ -13,3 +13,4 @@
 !.local/share/rofi
 .local/share/rofi/*
 !.local/share/rofi/themes
+.qmlls.ini
