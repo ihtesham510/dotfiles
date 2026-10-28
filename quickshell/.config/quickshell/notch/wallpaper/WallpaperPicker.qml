@@ -114,7 +114,6 @@ Item {
         anchors.rightMargin: 14
         height: 44
         radius: 12
-        border.width: 1
         color: "transparent"
 
         Behavior on border.color {
