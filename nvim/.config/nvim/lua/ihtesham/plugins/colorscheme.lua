@@ -1,8 +1,13 @@
+-- The wallpaper palette (colors/wallpaper.lua) is the primary theme. Catppuccin
+-- stays installed as the fallback for when matugen has not written a palette
+-- yet, so a fresh machine still gets a working colorscheme.
+local palette = require 'ihtesham.palette'
+
 return {
   'catppuccin/nvim',
   priority = 1000, -- Load before other plugins
   lazy = false, -- Load on startup
-  opts = {}, -- Automatically calls require("caelestia").setup()
+  opts = {}, -- Automatically calls require("catppuccin").setup()
   config = function()
     require('catppuccin').setup {
       flavour = 'mocha', -- latte, frappe, macchiato, mocha
@@ -71,6 +76,10 @@ return {
     }
 
     -- setup must be called before loading
-    vim.cmd.colorscheme 'catppuccin-nvim'
+    if palette.load() then
+      vim.cmd.colorscheme 'wallpaper'
+    else
+      vim.cmd.colorscheme 'catppuccin-nvim'
+    end
   end,
 }

@@ -32,7 +32,7 @@ return {
             separator = true,
           },
         },
-        show_buffer_icons = true, -- disable filetype icons for buffers
+        show_buffer_icons = false, -- disable filetype icons for buffers
         show_buffer_close_icons = false,
         show_close_icon = false,
         show_tab_indicators = true,
