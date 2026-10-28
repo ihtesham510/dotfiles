@@ -2,19 +2,24 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
+import qs.services
 
 Scope {
     id: wallpaper
 
-    // The single source of truth. A future picker only needs to set this.
-    property string current: Quickshell.env("HOME") + "/Pictures/Wallpapers/anime girl.jpg"
     property int fadeDuration: 700
 
     // qs ipc call wallpaper set /path/to/image.jpg
+    // qs ipc call wallpaper get
     IpcHandler {
         target: "wallpaper"
+
         function set(path: string): void {
-            wallpaper.current = path;
+            Wallpapers.setCurrent(path);
+        }
+
+        function get(): string {
+            return Wallpapers.current;
         }
     }
 
@@ -37,7 +42,7 @@ Scope {
             WlrLayershell.layer: WlrLayer.Background
             WlrLayershell.namespace: "wallpaper"
 
-            property string target: wallpaper.current
+            property string target: Wallpapers.current
 
             // Old image stays underneath while the new one fades in on top
             Image {

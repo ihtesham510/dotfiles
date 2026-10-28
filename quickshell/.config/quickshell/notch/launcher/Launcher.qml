@@ -51,6 +51,9 @@ Item {
     onVisibleChanged: {
         if (visible) {
             reset();
+            // Immediate attempt plus a deferred retry: the Hyprland focus grab
+            // may not have handed the keyboard to this window yet.
+            focusInput();
             Qt.callLater(focusInput);
         }
     }

@@ -4,13 +4,130 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import qs
 import qs.notch.launcher
+import qs.notch.wallpaper
 import qs.services
 
 PanelWindow {
     id: root
 
     readonly property bool launcherOpen: NotchState.mode === NotchState.Mode.Launcher
+    readonly property bool wallpaperOpen: NotchState.mode === NotchState.Mode.ExpandedWide
     readonly property bool expanded: NotchState.mode === NotchState.Mode.Expand
+
+    readonly property bool panelOpen: root.launcherOpen || root.wallpaperOpen
+
+    // 0 = pill, 1 = panel. Every morph step reads this, so the geometry, the
+    // content crossfade and the focus handoff all stay on the same clock.
+    property real panelAmount: root.panelOpen ? 1 : 0
+
+    // True for the whole open/close animation (0.001 avoids a final-frame
+    // flicker when the animation lands exactly on zero).
+    readonly property bool panelMorph: root.panelAmount > 0.001
+
+    // Geometry of the panel currently being shown. Latched so that closing
+    // still knows which size to shrink from after the mode is already Idle.
+    property int panelWidth: Theme.launcherWidth
+    property int panelHeight: Theme.launcherHeight
+    property int panelRadius: Theme.launcherRadius
+
+    function latchPanel(width: int, height: int, radius: int): void {
+        panelWidth = width;
+        panelHeight = height;
+        panelRadius = radius;
+    }
+
+    onLauncherOpenChanged: {
+        if (launcherOpen)
+            latchPanel(Theme.launcherWidth, Theme.launcherHeight, Theme.launcherRadius);
+    }
+
+    onWallpaperOpenChanged: {
+        if (wallpaperOpen)
+            latchPanel(Theme.expandedWideWidth, Theme.expandedWideHeight, Theme.expandedWideRadius);
+    }
+
+    // Re-check the hover state once a closing morph has finished (the pointer
+    // may have stayed over the pill the whole time).
+    function checkHover(): void {
+        if (hover.hovered && NotchState.mode === NotchState.Mode.Idle)
+            NotchState.setMode(NotchState.Mode.Hoverd);
+    }
+
+    onPanelMorphChanged: {
+        if (!panelMorph)
+            Qt.callLater(checkHover);
+    }
+
+    Behavior on panelAmount {
+        NumberAnimation {
+            duration: Theme.launcherMorphDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    // Switching directly between two panels (launcher -> wallpaper) resizes
+    // smoothly instead of snapping.
+    Behavior on panelWidth {
+        NumberAnimation {
+            duration: Theme.launcherMorphDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+    Behavior on panelHeight {
+        NumberAnimation {
+            duration: Theme.launcherMorphDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+    Behavior on panelRadius {
+        NumberAnimation {
+            duration: Theme.launcherMorphDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    // Geometry the notch rests at when no panel is open.
+    readonly property real idleWidth: {
+        if (root.panelMorph)
+            return Theme.collapsedWidth;
+
+        switch (NotchState.mode) {
+        case NotchState.Mode.Expand:
+            return Theme.expandedWidth;
+        case NotchState.Mode.Hoverd:
+            return Math.round(Theme.collapsedWidth * 1.1);
+        default:
+            return Theme.collapsedWidth;
+        }
+    }
+
+    readonly property real idleHeight: {
+        if (root.panelMorph)
+            return Theme.collapsedHeight;
+
+        switch (NotchState.mode) {
+        case NotchState.Mode.Expand:
+            return Theme.expandedHeight;
+        case NotchState.Mode.Hoverd:
+            return Math.round(Theme.collapsedHeight * 1.1);
+        default:
+            return Theme.collapsedHeight;
+        }
+    }
+
+    readonly property real idleRadius: {
+        if (root.panelMorph)
+            return Theme.collapsedHeight / 2;
+
+        switch (NotchState.mode) {
+        case NotchState.Mode.Expand:
+            return Theme.expandedHeight / 4;
+        case NotchState.Mode.Hoverd:
+            return Theme.collapsedHeight * 0.55;
+        default:
+            return Theme.collapsedHeight / 2;
+        }
+    }
 
     anchors.top: true
     margins.top: 8
@@ -27,13 +144,14 @@ PanelWindow {
     // Hands the keyboard to the notch while a panel is open and fires
     // onCleared when the user clicks elsewhere, which closes it.
     HyprlandFocusGrab {
-        active: root.launcherOpen || root.expanded
+        active: root.panelOpen || root.expanded
         windows: [root]
         onCleared: NotchState.close()
     }
 
     // qs ipc call notch toggle
     // qs ipc call notch open launcher
+    // qs ipc call notch open wallpaper
     // qs ipc call notch open expand
     // qs ipc call notch close
     IpcHandler {
@@ -42,6 +160,8 @@ PanelWindow {
         function open(mode: string): void {
             if (mode === "launcher")
                 NotchState.setMode(NotchState.Mode.Launcher);
+            else if (mode === "wallpaper" || mode === "wide")
+                NotchState.setMode(NotchState.Mode.ExpandedWide);
             else if (mode === "expand")
                 NotchState.setMode(NotchState.Mode.Expand);
         }
@@ -52,6 +172,10 @@ PanelWindow {
 
         function toggle(): void {
             NotchState.toggle(NotchState.Mode.Launcher);
+        }
+
+        function toggleWallpaper(): void {
+            NotchState.toggle(NotchState.Mode.ExpandedWide);
         }
 
         function state(): string {
@@ -66,6 +190,8 @@ PanelWindow {
                 return "expand";
             case NotchState.Mode.Hoverd:
                 return "hoverd";
+            case NotchState.Mode.ExpandedWide:
+                return "wallpaper";
             default:
                 return "idle";
             }
@@ -78,55 +204,36 @@ PanelWindow {
         anchors.top: parent.top
         clip: true
 
-        width: {
-            switch (NotchState.mode) {
-            case NotchState.Mode.Launcher:
-                return Theme.launcherWidth;
-            case NotchState.Mode.Expand:
-                return Theme.expandedWidth;
-            case NotchState.Mode.Hoverd:
-                return Theme.collapsedWidth * 1.1;
-            default:
-                return Theme.collapsedWidth;
-            }
-        }
-        height: {
-            switch (NotchState.mode) {
-            case NotchState.Mode.Launcher:
-                return Theme.launcherHeight;
-            case NotchState.Mode.Expand:
-                return Theme.expandedHeight;
-            case NotchState.Mode.Hoverd:
-                return Theme.collapsedHeight * 1.1;
-            default:
-                return Theme.collapsedHeight;
-            }
-        }
-        radius: {
-            switch (NotchState.mode) {
-            case NotchState.Mode.Launcher:
-                return Theme.launcherRadius;
-            case NotchState.Mode.Expand:
-                return Theme.expandedHeight / 4;
-            default:
-                return Theme.collapsedHeight / 2;
-            }
-        }
+        // While a panel is open, the pill size is interpolated to the panel
+        // size by panelAmount. Outside a morph the resting geometry is used,
+        // and the Behaviors below animate the Expand / Hover transitions.
+        width: root.panelMorph
+               ? root.idleWidth + (root.panelWidth - root.idleWidth) * root.panelAmount
+               : root.idleWidth
+        height: root.panelMorph
+                ? root.idleHeight + (root.panelHeight - root.idleHeight) * root.panelAmount
+                : root.idleHeight
+        radius: root.panelMorph
+                ? root.idleRadius + (root.panelRadius - root.idleRadius) * root.panelAmount
+                : root.idleRadius
         color: Theme.background
 
         Behavior on width {
+            enabled: !root.panelOpen && !root.panelMorph
             NumberAnimation {
                 duration: Theme.expandDuration
                 easing.type: Easing.OutCubic
             }
         }
         Behavior on height {
+            enabled: !root.panelOpen && !root.panelMorph
             NumberAnimation {
                 duration: Theme.expandDuration
                 easing.type: Easing.OutCubic
             }
         }
         Behavior on radius {
+            enabled: !root.panelOpen && !root.panelMorph
             NumberAnimation {
                 duration: Theme.expandDuration
                 easing.type: Easing.OutCubic
@@ -137,7 +244,7 @@ PanelWindow {
             id: hover
             onHoveredChanged: {
                 if (hovered) {
-                    if (NotchState.mode === NotchState.Mode.Idle)
+                    if (!root.panelMorph && NotchState.mode === NotchState.Mode.Idle)
                         NotchState.setMode(NotchState.Mode.Hoverd);
                 } else if (NotchState.mode === NotchState.Mode.Hoverd) {
                     NotchState.setMode(NotchState.Mode.Idle);
@@ -147,7 +254,7 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
-            enabled: !root.launcherOpen
+            enabled: !root.panelOpen && !root.panelMorph
             onClicked: NotchState.toggle(NotchState.Mode.Expand)
         }
 
@@ -161,16 +268,56 @@ PanelWindow {
             }
         }
 
+        // The idle content stays pinned to the pill's size while a panel is
+        // morphing, so the clock never drifts to the middle of the growing
+        // notch. It fades out at the halfway point of the growth.
         IdleContent {
-            anchors.fill: parent
-            expanded: NotchState.mode === NotchState.Mode.Expand
-            hoverd: NotchState.mode == NotchState.Mode.Hoverd
-            visible: !root.launcherOpen
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: root.panelMorph ? Theme.collapsedWidth : parent.width
+            height: root.panelMorph ? Theme.collapsedHeight : parent.height
+
+            expanded: root.expanded
+            hoverd: NotchState.mode === NotchState.Mode.Hoverd && !root.panelMorph
+
+            visible: opacity > 0
+            opacity: root.panelOpen ? (root.panelAmount < 0.5 ? 1 : 0) : 1
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
 
         Launcher {
             anchors.fill: parent
-            visible: root.launcherOpen
+            visible: opacity > 0
+            opacity: root.launcherOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            onCloseRequested: NotchState.close()
+        }
+
+        WallpaperPicker {
+            anchors.fill: parent
+            visible: opacity > 0
+            opacity: root.wallpaperOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+
             onCloseRequested: NotchState.close()
         }
     }

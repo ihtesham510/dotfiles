@@ -8,7 +8,8 @@ Singleton {
         Idle,
         Launcher,
         Expand,
-        Hoverd
+        Hoverd,
+        ExpandedWide
     }
 
     property int mode: NotchState.Mode.Idle
