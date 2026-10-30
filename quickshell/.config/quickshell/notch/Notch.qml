@@ -16,8 +16,9 @@ PanelWindow {
     readonly property bool expanded: NotchState.mode === NotchState.Mode.Expand
     readonly property bool volumeOpen: NotchState.mode === NotchState.Mode.VolumeMeter
     readonly property bool brightnessOpen: NotchState.mode === NotchState.Mode.BrightnessMeter
+    readonly property bool powerPanelOpen: NotchState.mode === NotchState.Mode.PowerCenter
 
-    readonly property bool panelOpen: root.launcherOpen || root.wallpaperOpen || root.volumeOpen || root.brightnessOpen
+    readonly property bool panelOpen: NotchState.mode !== NotchState.Mode.Idle
 
     // 0 = pill, 1 = panel. Every morph step reads this, so the geometry, the
     // content crossfade and the focus handoff all stay on the same clock.
@@ -37,6 +38,10 @@ PanelWindow {
         panelWidth = width;
         panelHeight = height;
         panelRadius = radius;
+    }
+    onPowerPanelOpenChanged: {
+        if (powerPanelOpen)
+            latchPanel(Theme.powerPanelWidth, Theme.powerPanelHeight, Theme.powerPanelRadius);
     }
 
     onLauncherOpenChanged: {
@@ -161,7 +166,7 @@ PanelWindow {
     // must not steal the keyboard from the focused window while the user is
     // pressing the volume keys.
     HyprlandFocusGrab {
-        active: root.launcherOpen || root.wallpaperOpen || root.expanded
+        active: root.launcherOpen || root.wallpaperOpen || root.expanded || root.powerPanelOpen
         windows: [root]
         onCleared: NotchState.close()
     }
@@ -175,12 +180,20 @@ PanelWindow {
         target: "notch"
 
         function open(mode: string): void {
-            if (mode === "launcher")
+            switch (mode) {
+            case "laucher":
                 NotchState.setMode(NotchState.Mode.Launcher);
-            else if (mode === "wallpaper" || mode === "wide")
+                break;
+            case "powerpanel":
+                NotchState.setMode(NotchState.Mode.PowerCenter);
+                break;
+            case "wallpaper":
                 NotchState.setMode(NotchState.Mode.ExpandedWide);
-            else if (mode === "expand")
+                break;
+            case "expand":
                 NotchState.setMode(NotchState.Mode.Expand);
+                break;
+            }
         }
 
         function close(): void {
@@ -213,6 +226,8 @@ PanelWindow {
                 return "volume";
             case NotchState.Mode.BrightnessMeter:
                 return "brightness";
+            case NotchState.Mode.PowerCenter:
+                return "power";
             default:
                 return "idle";
             }
@@ -380,6 +395,19 @@ PanelWindow {
             anchors.fill: parent
             visible: opacity > 0
             opacity: root.brightnessOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+            onCloseRequested: NotchState.close()
+        }
+
+        PowerCenter {
+            anchors.fill: parent
+            visible: opacity > 0
+            opacity: root.powerPanelOpen ? 1 : 0
             Behavior on opacity {
                 NumberAnimation {
                     duration: Theme.contentFadeDuration

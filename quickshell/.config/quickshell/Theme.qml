@@ -66,6 +66,11 @@ Singleton {
     readonly property int expandedWideHeight: 400
     readonly property int expandedWideRadius: 20
 
+    // Power Panel
+    readonly property int powerPanelWidth: 700
+    readonly property int powerPanelHeight: 120
+    readonly property int powerPanelRadius: 20
+
     // Volume OSD (same height as the collapsed notch, a bit wider)
     readonly property int volumeWidth: 320
     readonly property int volumeHeight: collapsedHeight

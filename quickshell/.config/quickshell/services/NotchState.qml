@@ -12,7 +12,8 @@ Singleton {
         ExpandedWide,
         VolumeMeter,
         BrightnessMeter,
-        ControlCenter
+        ControlCenter,
+        PowerCenter
     }
 
     property int mode: NotchState.Mode.Idle

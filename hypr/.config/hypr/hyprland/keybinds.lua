@@ -173,8 +173,19 @@ create_bind(vars.kbColorPicker, hl.dsp.exec_cmd("hyprpicker -a"))
 create_bind(vars.kbWallpaperChanger, hl.dsp.exec_cmd("qs ipc call notch open wallpaper"))
 
 -- Brightness
-create_bind("XF86MonBrightnessUp", hl.dsp.global("caelestia:brightnessUp"), locked)
-create_bind("XF86MonBrightnessDown", hl.dsp.global("caelestia:brightnessDown"), locked)
+-- Routed through the shell for the OSD, like the volume keys. The
+-- `-c backlight` filter means the fallback fails harmlessly on machines with
+-- no backlight (instead of changing a keyboard LED).
+create_bind(
+	"XF86MonBrightnessUp",
+	hl.dsp.exec_cmd("qs ipc call brightness up >/dev/null 2>&1 || brightnessctl -c backlight set 5%+"),
+	locked_repeating
+)
+create_bind(
+	"XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("qs ipc call brightness down >/dev/null 2>&1 || brightnessctl -c backlight set 5%-"),
+	locked_repeating
+)
 
 -- Media
 create_bind({ vars.kbMediaToggle, "XF86AudioPlay", "XF86AudioPause" }, hl.dsp.global("caelestia:mediaToggle"), locked)
@@ -183,27 +194,32 @@ create_bind({ vars.kbMediaPrev, "XF86AudioPrev" }, hl.dsp.global("caelestia:medi
 create_bind({ vars.kbMediaStop, "XF86AudioStop" }, hl.dsp.global("caelestia:mediaStop"), locked)
 
 -- Volume
+-- These go through the shell so the volume OSD also appears when the value is
+-- already at its limit (wpctl reports no change there, so the shell would never
+-- see it). wpctl stays as the fallback for when quickshell is not running.
 create_bind(
 	{ vars.kbVolumeMute, "XF86AudioMute" },
-	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
+	hl.dsp.exec_cmd("qs ipc call volume mute >/dev/null 2>&1 || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
 	locked
 )
 create_bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), locked)
 create_bind(
 	"XF86AudioRaiseVolume",
 	hl.dsp.exec_cmd(
-		"wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l "
+		"qs ipc call volume up >/dev/null 2>&1 || { wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l "
 			.. (vars.volumeMax / 100)
 			.. " @DEFAULT_AUDIO_SINK@ "
 			.. vars.volumeStep
-			.. "%+"
+			.. "%+; }"
 	),
 	locked_repeating
 )
 create_bind(
 	"XF86AudioLowerVolume",
 	hl.dsp.exec_cmd(
-		"wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. vars.volumeStep .. "%-"
+		"qs ipc call volume down >/dev/null 2>&1 || { wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume @DEFAULT_AUDIO_SINK@ "
+			.. vars.volumeStep
+			.. "%-; }"
 	),
 	locked_repeating
 )
