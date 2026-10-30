@@ -23,7 +23,6 @@ return {
         max_prefix_length = 15,
         truncate_names = true,
         tab_size = 18,
-        diagnostics = 'nvim_lsp',
         offsets = {
           {
             filetype = 'NvimTree',

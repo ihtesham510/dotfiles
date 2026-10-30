@@ -246,20 +246,69 @@ local function apply(p)
   hl('NvimTreeGitMerge', { fg = p.error })
 
   -- bufferline
+  --
+  -- Every group needs an explicit background. bufferline's own defaults only
+  -- set a foreground, so any segment it draws (numbers, the close button,
+  -- duplicate markers, diagnostic counts, ...) would be transparent and punch
+  -- a hole in the selected tab's pill. The `*Selected` variants all share
+  -- `sel_bg` so the active tab reads as one solid shape.
+  local sel_bg = p.surface_container_high
+  local sel_fg = p.primary
+
   hl('BufferLineFill', { bg = container_bg })
   hl('BufferLineBackground', { fg = p.on_surface_variant, bg = container_bg })
   hl('BufferLineBuffer', { fg = p.on_surface_variant, bg = container_bg })
   hl('BufferLineBufferVisible', { fg = p.on_surface, bg = container_bg })
-  hl('BufferLineBufferSelected', { fg = p.primary, bg = p.surface_container_high, bold = true })
-  hl('BufferLineIndicatorSelected', { fg = p.primary, bg = p.surface_container_high })
+  hl('BufferLineBufferSelected', { fg = sel_fg, bg = sel_bg, bold = true })
+  hl('BufferLineIndicatorSelected', { fg = sel_fg, bg = sel_bg })
+  hl('BufferLineIndicatorVisible', { fg = p.outline_variant, bg = container_bg })
   hl('BufferLineSeparator', { fg = p.outline_variant, bg = container_bg })
-  hl('BufferLineSeparatorSelected', { fg = p.outline_variant, bg = p.surface_container_high })
+  hl('BufferLineSeparatorSelected', { fg = p.outline_variant, bg = sel_bg })
+  hl('BufferLineOffsetSeparator', { fg = p.outline_variant, bg = container_bg })
+  hl('BufferLineTruncMarker', { fg = p.outline, bg = container_bg })
   hl('BufferLineModified', { fg = p.syntax_yellow, bg = container_bg })
-  hl('BufferLineModifiedSelected', { fg = p.syntax_yellow, bg = p.surface_container_high })
+  hl('BufferLineModifiedVisible', { fg = p.syntax_yellow, bg = container_bg })
+  hl('BufferLineModifiedSelected', { fg = p.syntax_yellow, bg = sel_bg })
   hl('BufferLineCloseButton', { fg = p.on_surface_variant, bg = container_bg })
-  hl('BufferLineCloseButtonSelected', { fg = p.error, bg = p.surface_container_high })
+  hl('BufferLineCloseButtonVisible', { fg = p.on_surface_variant, bg = container_bg })
+  hl('BufferLineCloseButtonSelected', { fg = p.error, bg = sel_bg })
+  hl('BufferLineDuplicate', { fg = p.outline, bg = container_bg, italic = true })
+  hl('BufferLineDuplicateVisible', { fg = p.outline, bg = container_bg, italic = true })
+  hl('BufferLineDuplicateSelected', { fg = p.outline, bg = sel_bg, italic = true })
+  hl('BufferLineNumbers', { fg = p.on_surface_variant, bg = container_bg })
+  hl('BufferLineNumbersVisible', { fg = p.on_surface, bg = container_bg })
+  hl('BufferLineNumbersSelected', { fg = sel_fg, bg = sel_bg, bold = true })
+  hl('BufferLinePick', { fg = p.on_primary, bg = p.primary, bold = true })
+  hl('BufferLinePickVisible', { fg = p.on_primary, bg = p.primary, bold = true })
+  hl('BufferLinePickSelected', { fg = p.on_primary, bg = p.primary, bold = true })
+  hl('BufferLineGroupLabel', { fg = p.on_primary, bg = p.primary })
+  hl('BufferLineGroupSeparator', { fg = p.outline_variant, bg = container_bg })
   hl('BufferLineDiagnostic', { fg = p.on_surface_variant, bg = container_bg })
-  hl('BufferLineDiagnosticSelected', { fg = p.error, bg = p.surface_container_high, bold = true })
+  hl('BufferLineDiagnosticVisible', { fg = p.on_surface, bg = container_bg })
+  hl('BufferLineDiagnosticSelected', { fg = p.error, bg = sel_bg, bold = true })
+
+  -- Tab mode (bufferline's `mode = "tabs"`), in case it is switched later.
+  hl('BufferLineTab', { fg = p.on_surface_variant, bg = container_bg })
+  hl('BufferLineTabSelected', { fg = sel_fg, bg = sel_bg, bold = true })
+  hl('BufferLineTabSeparator', { fg = p.outline_variant, bg = container_bg })
+  hl('BufferLineTabSeparatorSelected', { fg = p.outline_variant, bg = sel_bg })
+  hl('BufferLineTabClose', { fg = p.error, bg = container_bg })
+
+  -- Diagnostic variants: coloured foreground, background follows the tab.
+  for _, d in ipairs {
+    { 'Error', p.error },
+    { 'Warning', p.syntax_yellow },
+    { 'Info', p.syntax_blue },
+    { 'Hint', p.syntax_cyan },
+  } do
+    local name, colour = d[1], d[2]
+    hl('BufferLine' .. name, { fg = colour, bg = container_bg })
+    hl('BufferLine' .. name .. 'Visible', { fg = colour, bg = container_bg })
+    hl('BufferLine' .. name .. 'Selected', { fg = colour, bg = sel_bg })
+    hl('BufferLine' .. name .. 'Diagnostic', { fg = colour, bg = container_bg })
+    hl('BufferLine' .. name .. 'DiagnosticVisible', { fg = colour, bg = container_bg })
+    hl('BufferLine' .. name .. 'DiagnosticSelected', { fg = colour, bg = sel_bg })
+  end
 
   -- nvim-cmp
   hl('CmpItemAbbr', { fg = p.on_surface })

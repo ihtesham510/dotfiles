@@ -1,59 +1,68 @@
 -- Statusline colours come from the wallpaper palette. The fallbacks keep the
 -- old look when matugen has not written a palette yet.
-local p = require('ihtesham.palette').get()
+--
+-- The theme is a *function*, not a table: lualine calls it again on every
+-- ColorScheme (and `require('lualine').setup()` is re-run there), so switching
+-- the wallpaper repaints the statusline instead of keeping the colours that
+-- were current when the plugin first loaded.
+local palette = require('ihtesham.palette')
 
-local colors
-if p then
-  colors = {
-    normal = p.primary,
-    insert = p.syntax_green,
-    visual = p.primary_container,
-    visual_fg = p.on_primary_container,
-    command = p.syntax_yellow,
-    replace = p.error,
-    fg = p.on_surface,
-    -- "#00rrggbb" is fully transparent in Neovim, so the wallpaper shows through
-    bg = '#00' .. p.surface:sub(2),
-    nfg = p.on_primary,
-    inactive_bg = p.surface_container_low,
-    inactive_fg = p.outline,
-  }
-else
-  colors = {
-    normal = '#848fbf',
-    insert = '#3EFFDC',
-    visual = '#3e279d',
-    visual_fg = '#ffffff',
-    command = '#FFDA7B',
-    replace = '#FF4A4A',
-    fg = '#ffffff',
-    bg = '#00112638',
-    nfg = '#000000',
-    inactive_bg = '#2c3043',
-    inactive_fg = '#a0a0a0',
-  }
-end
+local function build_theme()
+  local p = palette.get()
 
-local function section(bg, fg)
+  local colors
+  if p then
+    colors = {
+      normal = p.primary,
+      insert = p.syntax_green,
+      visual = p.primary_container,
+      visual_fg = p.on_primary_container,
+      command = p.syntax_yellow,
+      replace = p.error,
+      fg = p.on_surface,
+      -- "#00rrggbb" is fully transparent in Neovim, so the wallpaper shows through
+      bg = '#00' .. p.surface:sub(2),
+      nfg = p.on_primary,
+      inactive_bg = p.surface_container_low,
+      inactive_fg = p.outline,
+    }
+  else
+    colors = {
+      normal = '#848fbf',
+      insert = '#3EFFDC',
+      visual = '#3e279d',
+      visual_fg = '#ffffff',
+      command = '#FFDA7B',
+      replace = '#FF4A4A',
+      fg = '#ffffff',
+      bg = '#00112638',
+      nfg = '#000000',
+      inactive_bg = '#2c3043',
+      inactive_fg = '#a0a0a0',
+    }
+  end
+
+  local function section(bg, fg)
+    return {
+      a = { bg = bg, fg = fg },
+      b = { bg = colors.bg, fg = colors.fg },
+      c = { bg = colors.bg, fg = colors.fg },
+    }
+  end
+
   return {
-    a = { bg = bg, fg = fg },
-    b = { bg = colors.bg, fg = colors.fg },
-    c = { bg = colors.bg, fg = colors.fg },
+    normal = section(colors.normal, colors.nfg),
+    insert = section(colors.insert, colors.nfg),
+    visual = section(colors.visual, colors.visual_fg),
+    command = section(colors.command, colors.nfg),
+    replace = section(colors.replace, colors.nfg),
+    inactive = {
+      a = { bg = colors.inactive_bg, fg = colors.inactive_fg },
+      b = { bg = colors.inactive_bg, fg = colors.inactive_fg },
+      c = { bg = colors.inactive_bg, fg = colors.inactive_fg },
+    },
   }
 end
-
-local my_lualine_theme = {
-  normal = section(colors.normal, colors.nfg),
-  insert = section(colors.insert, colors.nfg),
-  visual = section(colors.visual, colors.visual_fg),
-  command = section(colors.command, colors.nfg),
-  replace = section(colors.replace, colors.nfg),
-  inactive = {
-    a = { bg = colors.inactive_bg, fg = colors.inactive_fg },
-    b = { bg = colors.inactive_bg, fg = colors.inactive_fg },
-    c = { bg = colors.inactive_bg, fg = colors.inactive_fg },
-  },
-}
 local hide_in_width = function()
   return vim.fn.winwidth(0) > 80
 end
@@ -70,7 +79,7 @@ return {
     require('lualine').setup {
       options = {
         icons_enabled = true,
-        theme = my_lualine_theme,
+        theme = build_theme,
         component_separators = { left = '|', right = '|' },
         section_separators = { left = '', right = '' },
         disabled_filetypes = {
