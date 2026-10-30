@@ -49,6 +49,9 @@ Singleton {
     readonly property int margin: 18
     readonly property int expandDuration: 280
 
+    // Room around the notch reserved for its drop shadow (see Notch.qml).
+    readonly property int notchShadowPadding: 18
+
     // Notch <-> launcher morph
     readonly property int launcherMorphDuration: 340
     readonly property int contentFadeDuration: 110

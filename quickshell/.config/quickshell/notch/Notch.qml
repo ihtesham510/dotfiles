@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
@@ -216,6 +217,34 @@ PanelWindow {
                 return "idle";
             }
         }
+    }
+
+    // Slight drop shadow under the island. A MultiEffect can only paint inside
+    // its own item, so the shadow is rendered from a padded copy of the pill
+    // shape — otherwise the blur would be cut off at the island's edges.
+    Item {
+        id: notchShadow
+        anchors.centerIn: island
+        width: island.width + 2 * Theme.notchShadowPadding
+        height: island.height + 2 * Theme.notchShadowPadding
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: island.width
+            height: island.height
+            radius: island.radius
+            color: Theme.background
+        }
+    }
+
+    MultiEffect {
+        anchors.fill: notchShadow
+        source: notchShadow
+        shadowEnabled: true
+        shadowColor: "black"
+        shadowBlur: 0.75
+        shadowOpacity: 0.55
+        shadowVerticalOffset: 4
     }
 
     Rectangle {
