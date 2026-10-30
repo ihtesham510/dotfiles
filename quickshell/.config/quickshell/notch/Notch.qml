@@ -18,18 +18,12 @@ PanelWindow {
     readonly property bool brightnessOpen: NotchState.mode === NotchState.Mode.BrightnessMeter
     readonly property bool powerPanelOpen: NotchState.mode === NotchState.Mode.PowerCenter
 
-    readonly property bool panelOpen: NotchState.mode !== NotchState.Mode.Idle
+    readonly property bool panelOpen: NotchState.mode !== NotchState.Mode.Idle && NotchState.mode !== NotchState.Mode.Expand && NotchState.mode !== NotchState.Mode.Hoverd
 
-    // 0 = pill, 1 = panel. Every morph step reads this, so the geometry, the
-    // content crossfade and the focus handoff all stay on the same clock.
     property real panelAmount: root.panelOpen ? 1 : 0
 
-    // True for the whole open/close animation (0.001 avoids a final-frame
-    // flicker when the animation lands exactly on zero).
     readonly property bool panelMorph: root.panelAmount > 0.001
 
-    // Geometry of the panel currently being shown. Latched so that closing
-    // still knows which size to shrink from after the mode is already Idle.
     property int panelWidth: Theme.launcherWidth
     property int panelHeight: Theme.launcherHeight
     property int panelRadius: Theme.launcherRadius
@@ -64,8 +58,6 @@ PanelWindow {
             latchPanel(Theme.brightnessWidth, Theme.brightnessHeight, Theme.brightnessRadius);
     }
 
-    // Re-check the hover state once a closing morph has finished (the pointer
-    // may have stayed over the pill the whole time).
     function checkHover(): void {
         if (hover.hovered && NotchState.mode === NotchState.Mode.Idle)
             NotchState.setMode(NotchState.Mode.Hoverd);
@@ -83,8 +75,6 @@ PanelWindow {
         }
     }
 
-    // Switching directly between two panels (launcher -> wallpaper) resizes
-    // smoothly instead of snapping.
     Behavior on panelWidth {
         NumberAnimation {
             duration: Theme.launcherMorphDuration
@@ -104,7 +94,6 @@ PanelWindow {
         }
     }
 
-    // Geometry the notch rests at when no panel is open.
     readonly property real idleWidth: {
         if (root.panelMorph)
             return Theme.collapsedWidth;
@@ -159,23 +148,12 @@ PanelWindow {
         item: island
     }
 
-    // Hands the keyboard to the notch while a panel is open and fires
-    // onCleared when the user clicks elsewhere, which closes it.
-    //
-    // The volume OSD is deliberately excluded: it is a passive indicator and
-    // must not steal the keyboard from the focused window while the user is
-    // pressing the volume keys.
     HyprlandFocusGrab {
         active: root.launcherOpen || root.wallpaperOpen || root.expanded || root.powerPanelOpen
         windows: [root]
         onCleared: NotchState.close()
     }
 
-    // qs ipc call notch toggle
-    // qs ipc call notch open launcher
-    // qs ipc call notch open wallpaper
-    // qs ipc call notch open expand
-    // qs ipc call notch close
     IpcHandler {
         target: "notch"
 
@@ -234,9 +212,6 @@ PanelWindow {
         }
     }
 
-    // Slight drop shadow under the island. A MultiEffect can only paint inside
-    // its own item, so the shadow is rendered from a padded copy of the pill
-    // shape — otherwise the blur would be cut off at the island's edges.
     Item {
         id: notchShadow
         anchors.centerIn: island
@@ -268,9 +243,6 @@ PanelWindow {
         anchors.top: parent.top
         clip: true
 
-        // While a panel is open, the pill size is interpolated to the panel
-        // size by panelAmount. Outside a morph the resting geometry is used,
-        // and the Behaviors below animate the Expand / Hover transitions.
         width: root.panelMorph ? root.idleWidth + (root.panelWidth - root.idleWidth) * root.panelAmount : root.idleWidth
         height: root.panelMorph ? root.idleHeight + (root.panelHeight - root.idleHeight) * root.panelAmount : root.idleHeight
         radius: root.panelMorph ? root.idleRadius + (root.panelRadius - root.idleRadius) * root.panelAmount : root.idleRadius
@@ -326,9 +298,6 @@ PanelWindow {
             }
         }
 
-        // The idle content stays pinned to the pill's size while a panel is
-        // morphing, so the clock never drifts to the middle of the growing
-        // notch. It fades out at the halfway point of the growth.
         IdleContent {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
