@@ -29,11 +29,10 @@ Row {
                         return true;
                 return false;
             }
-
-            width: focused ? 8 : 6
-            height: focused ? 18 : 16
+            width: focused ? 8 : 7.5
+            height: focused ? 18 : 17.5
             radius: 8
-            color: focused ? Theme.foreground : (occupied ? Theme.occupied : Theme.inactive)
+            color: focused ? Theme.primary : (occupied ? Theme.occupied : Theme.inactive)
 
             Behavior on width {
                 NumberAnimation {

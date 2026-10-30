@@ -9,7 +9,10 @@ Singleton {
         Launcher,
         Expand,
         Hoverd,
-        ExpandedWide
+        ExpandedWide,
+        VolumeMeter,
+        BrightnessMeter,
+        ControlCenter
     }
 
     property int mode: NotchState.Mode.Idle

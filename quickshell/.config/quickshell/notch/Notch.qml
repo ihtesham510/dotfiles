@@ -13,8 +13,10 @@ PanelWindow {
     readonly property bool launcherOpen: NotchState.mode === NotchState.Mode.Launcher
     readonly property bool wallpaperOpen: NotchState.mode === NotchState.Mode.ExpandedWide
     readonly property bool expanded: NotchState.mode === NotchState.Mode.Expand
+    readonly property bool volumeOpen: NotchState.mode === NotchState.Mode.VolumeMeter
+    readonly property bool brightnessOpen: NotchState.mode === NotchState.Mode.BrightnessMeter
 
-    readonly property bool panelOpen: root.launcherOpen || root.wallpaperOpen
+    readonly property bool panelOpen: root.launcherOpen || root.wallpaperOpen || root.volumeOpen || root.brightnessOpen
 
     // 0 = pill, 1 = panel. Every morph step reads this, so the geometry, the
     // content crossfade and the focus handoff all stay on the same clock.
@@ -44,6 +46,16 @@ PanelWindow {
     onWallpaperOpenChanged: {
         if (wallpaperOpen)
             latchPanel(Theme.expandedWideWidth, Theme.expandedWideHeight, Theme.expandedWideRadius);
+    }
+
+    onVolumeOpenChanged: {
+        if (volumeOpen)
+            latchPanel(Theme.volumeWidth, Theme.volumeHeight, Theme.volumeRadius);
+    }
+
+    onBrightnessOpenChanged: {
+        if (brightnessOpen)
+            latchPanel(Theme.brightnessWidth, Theme.brightnessHeight, Theme.brightnessRadius);
     }
 
     // Re-check the hover state once a closing morph has finished (the pointer
@@ -143,8 +155,12 @@ PanelWindow {
 
     // Hands the keyboard to the notch while a panel is open and fires
     // onCleared when the user clicks elsewhere, which closes it.
+    //
+    // The volume OSD is deliberately excluded: it is a passive indicator and
+    // must not steal the keyboard from the focused window while the user is
+    // pressing the volume keys.
     HyprlandFocusGrab {
-        active: root.panelOpen || root.expanded
+        active: root.launcherOpen || root.wallpaperOpen || root.expanded
         windows: [root]
         onCleared: NotchState.close()
     }
@@ -192,6 +208,10 @@ PanelWindow {
                 return "hoverd";
             case NotchState.Mode.ExpandedWide:
                 return "wallpaper";
+            case NotchState.Mode.VolumeMeter:
+                return "volume";
+            case NotchState.Mode.BrightnessMeter:
+                return "brightness";
             default:
                 return "idle";
             }
@@ -207,15 +227,9 @@ PanelWindow {
         // While a panel is open, the pill size is interpolated to the panel
         // size by panelAmount. Outside a morph the resting geometry is used,
         // and the Behaviors below animate the Expand / Hover transitions.
-        width: root.panelMorph
-               ? root.idleWidth + (root.panelWidth - root.idleWidth) * root.panelAmount
-               : root.idleWidth
-        height: root.panelMorph
-                ? root.idleHeight + (root.panelHeight - root.idleHeight) * root.panelAmount
-                : root.idleHeight
-        radius: root.panelMorph
-                ? root.idleRadius + (root.panelRadius - root.idleRadius) * root.panelAmount
-                : root.idleRadius
+        width: root.panelMorph ? root.idleWidth + (root.panelWidth - root.idleWidth) * root.panelAmount : root.idleWidth
+        height: root.panelMorph ? root.idleHeight + (root.panelHeight - root.idleHeight) * root.panelAmount : root.idleHeight
+        radius: root.panelMorph ? root.idleRadius + (root.panelRadius - root.idleRadius) * root.panelAmount : root.idleRadius
         color: Theme.background
 
         Behavior on width {
@@ -318,6 +332,31 @@ PanelWindow {
                 }
             }
 
+            onCloseRequested: NotchState.close()
+        }
+        VolumeMeter {
+            anchors.fill: parent
+            visible: opacity > 0
+            opacity: root.volumeOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+            onCloseRequested: NotchState.close()
+        }
+
+        BrightnessMeter {
+            anchors.fill: parent
+            visible: opacity > 0
+            opacity: root.brightnessOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
             onCloseRequested: NotchState.close()
         }
     }

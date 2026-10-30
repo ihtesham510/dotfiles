@@ -63,6 +63,16 @@ Singleton {
     readonly property int expandedWideHeight: 400
     readonly property int expandedWideRadius: 20
 
+    // Volume OSD (same height as the collapsed notch, a bit wider)
+    readonly property int volumeWidth: 320
+    readonly property int volumeHeight: collapsedHeight
+    readonly property int volumeRadius: collapsedHeight / 2
+
+    // Brightness OSD — deliberately identical to the volume OSD.
+    readonly property int brightnessWidth: volumeWidth
+    readonly property int brightnessHeight: volumeHeight
+    readonly property int brightnessRadius: volumeRadius
+
     // Wallpaper carousel
     readonly property int wallpaperCardWidth: 240
     readonly property int wallpaperCardHeight: 132
