@@ -1,3 +1,6 @@
+local variables = require 'ihtesham.variables'
+local map = require('ihtesham.utils.functions').map
+
 return {
   'nvim-tree/nvim-tree.lua',
   dependencies = { 'nvim-tree/nvim-web-devicons', 'nvim-telescope/telescope.nvim' },
@@ -11,22 +14,22 @@ return {
       end
 
       -- copy default mappings here from defaults in next section
-      vim.keymap.set('n', 'l', api.node.open.edit, opts 'Open')
-      vim.keymap.set('n', '<CR>', api.node.open.edit, opts 'Open')
+      map('n', variables.treeEdit, api.node.open.edit, opts 'Open')
+      map('n', variables.treeEditEnter, api.node.open.edit, opts 'Open')
       -- ---
       -- -- OR use all default mappings
       api.config.mappings.default_on_attach(bufnr)
 
-      vim.keymap.set('n', 'ff', '<cmd>Telescope find_files<cr>', opts 'Open')
+      map('n', variables.treeFindFiles, '<cmd>Telescope find_files<cr>', opts 'Open')
       --
       -- -- remove a default
       -- vim.keymap.del("n", "<C-]>", { buffer = bufnr })
       --
       -- -- override a default
-      -- vim.keymap.set("n", "<C-e>", api.tree.reload, opts("Refresh"))
+      -- map("n", "<C-e>", api.tree.reload, opts("Refresh"))
       --
       -- -- add your mappings
-      -- vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
+      -- map("n", "?", api.tree.toggle_help, opts("Help"))
     end
 
     -- recommended settings from nvim-tree documentation
@@ -82,9 +85,8 @@ return {
     }
 
     -- set keymaps
-    local keymap = vim.keymap -- for conciseness
 
-    keymap.set('n', '<leader>e', '<cmd>NvimTreeOpen<CR>', { desc = 'Open file explorer' }) -- toggle file explorer
-    keymap.set('n', 't', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' }) -- toggle file explorer
+    map('n', variables.treeOpen, '<cmd>NvimTreeOpen<CR>', { desc = 'Open file explorer' }) -- toggle file explorer
+    map('n', variables.treeToggle, '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' }) -- toggle file explorer
   end,
 }

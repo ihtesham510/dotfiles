@@ -1,3 +1,5 @@
+local variables = require 'ihtesham.variables'
+local map = require('ihtesham.utils.functions').map
 return {
   'neovim/nvim-lspconfig',
   dependencies = {
@@ -120,22 +122,22 @@ return {
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
-        local map = function(keys, func, desc, mode)
+        local setKeymap = function(keys, func, desc, mode)
           mode = mode or 'n'
-          vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+          map(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
-        map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-        map('<leader>d', vim.diagnostic.open_float, 'Show diagnostics under the cursor')
+        setKeymap(variables.lspRename, vim.lsp.buf.rename, '[R]e[n]ame')
+        setKeymap(variables.lspDiagnostics, vim.diagnostic.open_float, 'Show diagnostics under the cursor')
 
-        map('ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-        map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-        map('gi', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-        map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-        map('go', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
-        map('gw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
-        map('gt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+        setKeymap(variables.lspCodeAction, vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+        setKeymap(variables.lspReferences, require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+        setKeymap(variables.lspImplementations, require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+        setKeymap(variables.lspDefinitions, require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+        setKeymap(variables.lspDeclaration, vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        setKeymap(variables.lspDocumentSymbols, require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+        setKeymap(variables.lspWorkspaceSymbols, require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+        setKeymap(variables.lspTypeDefinitions, require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if not client then
@@ -168,7 +170,7 @@ return {
 
         -- Inlay hints toggle
         if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-          map('<leader>th', function()
+          setKeymap(variables.lspToggleInlayHints, function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
         end

@@ -5,7 +5,7 @@ return {
   config = function()
     local alpha = require 'alpha'
     local dashboard = require 'alpha.themes.dashboard'
-    local keymap = vim.keymap.set
+    local map = require('ihtesham.utils.functions').map
 
     -- Set header
     --
@@ -32,7 +32,7 @@ return {
       end),
       dashboard.button('q', '󰗼  Quit Neovim', ':qa<CR>'),
     }
-    keymap('n', '<leader>a', '<cmd>Alpha<cr>', { desc = 'Open Alpha' })
+    map('n', require('ihtesham.variables').open_alpha, '<cmd>Alpha<cr>', { desc = 'Open Alpha' })
 
     -- Send config to alpha
     alpha.setup(dashboard.opts)

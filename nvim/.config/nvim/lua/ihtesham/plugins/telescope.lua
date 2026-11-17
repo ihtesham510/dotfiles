@@ -15,6 +15,7 @@ return {
     { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
   },
   config = function()
+    local variables = require 'ihtesham.variables'
     local actions = require 'telescope.actions'
     local builtin = require 'telescope.builtin'
     require('telescope').setup {
@@ -69,7 +70,7 @@ return {
         },
       },
     }
-    local keymap = vim.keymap.set
+    local keymap = require('ihtesham.utils.functions').map
 
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'project')
@@ -77,74 +78,52 @@ return {
     pcall(require('telescope').load_extension, 'ui-select')
 
     -- fuzzy find and search
-    keymap('n', '<leader>sh', builtin.help_tags, { desc = 'Search [H]elp' })
-    keymap('n', 'sh', builtin.help_tags, { desc = 'Search [H]elp' })
-    keymap('n', '<leader>sk', builtin.keymaps, { desc = 'Search [K]eymaps' })
-    keymap('n', 'sk', builtin.keymaps, { desc = 'Search [K]eymaps' })
-    keymap('n', '<leader>sf', builtin.find_files, { desc = 'Search [F]iles' })
-    keymap('n', 'sf', builtin.find_files, { desc = 'Search [F]iles' })
-    keymap('n', 'ff', builtin.find_files, { desc = 'Search [F]iles' })
-    keymap('n', 'ss', builtin.builtin, { desc = 'Search [S]elect Telescope' })
-    keymap('n', '<leader>ss', builtin.builtin, { desc = 'Search [S]elect Telescope' })
-    keymap({ 'n', 'v' }, 'sw', builtin.grep_string, { desc = 'Search current [W]ord' })
-    keymap({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = 'Search current [W]ord' })
-    keymap('n', 'sg', builtin.live_grep, { desc = 'Search by [G]rep' })
-    keymap('n', '<leader>sg', builtin.live_grep, { desc = 'Search by [G]rep' })
-    keymap('n', 'F', builtin.live_grep, { desc = 'Search by [G]rep' })
-    keymap('n', 'sd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })
-    keymap('n', '<leader>sd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })
-    keymap('n', 'sR', builtin.resume, { desc = 'Search [R]esume' })
-    keymap('n', '<leader>sR', builtin.resume, { desc = 'Search [R]esume' })
-    keymap('n', 'sr', builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
-    keymap('n', '<leader>sr', builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
-    keymap('n', 'st', '<cmd>TodoTelescope<cr>', { desc = 'Search todos' })
-    keymap('n', '<leader>st', '<cmd>TodoTelescope<cr>', { desc = 'Search todos' })
-    keymap('n', '<leader><leader>', builtin.buffers, { desc = 'Find existing buffers' })
+    keymap('n', variables.telescopeBuiltIn, builtin.builtin, { desc = 'Search [S]elect Telescope' })
 
-    -- Slightly advanced example of overriding default behavior and theme
-    keymap('n', '?', function()
-      -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+    keymap('n', variables.findDiagnostics, builtin.diagnostics, { desc = 'Search [D]iagnostics' })
+
+    keymap('n', variables.findRecentFiles, builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
+    keymap('n', variables.findTodos, '<cmd>TodoTelescope<cr>', { desc = 'Search todos' })
+    keymap('n', variables.findBuffers, builtin.buffers, { desc = 'Find existing buffers' })
+    keymap('n', variables.findHelpTags, builtin.help_tags, { desc = 'Search [H]elp' })
+    keymap('n', variables.findKeymaps, builtin.keymaps, { desc = 'Search [K]eymaps' })
+    keymap('n', variables.findFiles, builtin.find_files, { desc = 'Search [F]iles' })
+
+    keymap({ 'n', 'v' }, variables.grepString, builtin.grep_string, { desc = 'Search current [W]ord' })
+    keymap('n', variables.grep, builtin.live_grep, { desc = 'Search by [G]rep' })
+    keymap('n', variables.resumeFind, builtin.resume, { desc = 'Search [R]esume' })
+
+    keymap('n', variables.grepCurrentBuffer, function()
       builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
         previewer = false,
       })
     end, { desc = '[/] Fuzzily Search in current buffer' })
 
-    keymap('n', '<leader>so', function()
+    keymap('n', variables.grepOpenFiles, function()
       builtin.live_grep {
         grep_open_files = true,
         prompt_title = 'Live Grep in Open Files',
       }
     end, { desc = 'Search [/] in Open Files' })
 
-    keymap('n', 'so', function()
-      builtin.live_grep {
-        grep_open_files = true,
-        prompt_title = 'Live Grep in Open Files',
-      }
-    end, { desc = 'Search [/] in Open Files' })
-
-    -- Shortcut for Searching your Neovim configuration files
-    keymap('n', 'sc', function()
+    keymap('n', variables.findConfigFiles, function()
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = 'Search [N]eovim files' })
-    keymap('n', '<leader>sc', function()
-      builtin.find_files { cwd = vim.fn.stdpath 'config' }
-    end, { desc = 'Search [N]eovim files' })
-
     -- git
-    keymap('n', '<leader>gf', function()
+    --
+    keymap('n', variables.gitFiles, function()
       builtin.git_files()
     end, { desc = 'Git Files' })
-    keymap('n', '<leader>gS', function()
+    keymap('n', variables.gitStash, function()
       builtin.git_stash()
     end, { desc = 'Git Stash' })
-    keymap('n', '<leader>gs', function()
+    keymap('n', variables.gitStash, function()
       builtin.git_status()
-    end, { desc = 'Git Stash' })
-    keymap('n', '<leader>gb', function()
+    end, { desc = 'Git Status' })
+    keymap('n', variables.gitBranches, function()
       builtin.git_branches()
     end, { desc = 'Git Branches' })
-    keymap('n', '<leader>gc', function()
+    keymap('n', variables.gitCommits, function()
       builtin.git_commits()
     end, { desc = 'Git Commits' })
   end,
