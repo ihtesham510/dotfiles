@@ -4,7 +4,10 @@ return {
   build = ':TSUpdate',
   config = function()
     -- import nvim-treesitter plugin
-    local treesitter = require 'nvim-treesitter.configs'
+    local ok, treesitter = pcall(require, 'nvim-treesitter.config')
+    if not ok then
+      treesitter = require 'nvim-treesitter.configs'
+    end
 
     -- configure treesitter
     treesitter.setup { -- enable syntax highlighting
