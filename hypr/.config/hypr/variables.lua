@@ -96,7 +96,7 @@ return {
 
 	kbMoveWindow = "SUPER + Z",
 	kbResizeWindow = "SUPER + X",
-	kbCenterWindow = "ALT + BackSpace",
+	kbCenterWindow = "SUPER + BackSpace",
 	kbNormalizeWindow = "ALT + BackSpace",
 	kbWindowPip = "SUPER + ALT + BackSpace",
 	kbPinWindow = "SUPER + P",
@@ -122,7 +122,7 @@ return {
 	-- Utilities
 	kbScreenshot = "Print",
 	kbScreenshotFreeze = "SUPER + SHIFT + S",
-	kbScreenshotRegion = "SUPER + SHIFT + ALT + S",
+	kbScreenshotRegion = "SUPER + Print",
 	kbRecord = "CTRL + ALT + R",
 	kbRecordSound = "SUPER + ALT + R",
 	kbRecordRegion = "SUPER + SHIFT + ALT + R",
