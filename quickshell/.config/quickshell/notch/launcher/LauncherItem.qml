@@ -25,6 +25,16 @@ Rectangle {
         anchors.rightMargin: 12
         spacing: 12
 
+        Rectangle {
+            height: 18
+            width: 4
+            radius: 29
+            anchors.verticalCenter: parent.verticalCenter
+            color: Theme.primary
+            opacity: root.selected ? 1 : 0
+            visible: opacity !== 0
+        }
+
         IconImage {
             id: icon
             anchors.verticalCenter: parent.verticalCenter
