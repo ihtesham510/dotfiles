@@ -48,15 +48,5 @@
   "on_error": "{{colors.on_error.default.hex}}",
   "error_container": "{{colors.error_container.default.hex}}",
   "on_error_container": "{{colors.on_error_container.default.hex}}",
-  "success": "{{colors.success.default.hex}}",
-  "on_success": "{{colors.on_success.default.hex}}",
-  "success_container": "{{colors.success_container.default.hex}}",
-  "on_success_container": "{{colors.on_success_container.default.hex}}",
-  "source_color": "{{colors.source_color.default.hex}}",
-  "syntax_red": "{{colors.red.default.hex}}",
-  "syntax_green": "{{colors.green.default.hex}}",
-  "syntax_yellow": "{{colors.yellow.default.hex}}",
-  "syntax_blue": "{{colors.blue.default.hex}}",
-  "syntax_magenta": "{{colors.magenta.default.hex}}",
-  "syntax_cyan": "{{colors.cyan.default.hex}}"
+  "source_color": "{{colors.source_color.default.hex}}"
 }

@@ -2,10 +2,7 @@
 --
 -- The Quickshell side runs matugen on every wallpaper change and writes the
 -- Material 3 roles to ~/.cache/quickshell/colors.json (see
--- dotfiles/matugen/.config/matugen). That includes the syntax_* accents
--- (red, green, yellow, blue, magenta, cyan), which come from matugen's
--- [config.custom_colors] and are blended toward the wallpaper by matugen
--- itself. This module only reads them.
+-- dotfiles/matugen/.config/matugen). This module only reads them.
 --
 -- Nothing here is cached: the colorscheme re-reads the file when the watcher
 -- fires, so switching wallpaper retints a running Neovim.

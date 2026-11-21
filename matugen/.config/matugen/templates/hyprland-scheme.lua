@@ -48,9 +48,5 @@ return {
   onError = "{{colors.on_error.default.hex_stripped}}",
   errorContainer = "{{colors.error_container.default.hex_stripped}}",
   onErrorContainer = "{{colors.on_error_container.default.hex_stripped}}",
-  success = "{{colors.success.default.hex_stripped}}",
-  onSuccess = "{{colors.on_success.default.hex_stripped}}",
-  successContainer = "{{colors.success_container.default.hex_stripped}}",
-  onSuccessContainer = "{{colors.on_success_container.default.hex_stripped}}",
   sourceColor = "{{colors.source_color.default.hex_stripped}}"
 }

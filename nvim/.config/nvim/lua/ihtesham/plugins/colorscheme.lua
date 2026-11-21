@@ -1,7 +1,7 @@
 -- The wallpaper palette (colors/wallpaper.lua) is the primary theme. Catppuccin
 -- stays installed as the fallback for when matugen has not written a palette
 -- yet, so a fresh machine still gets a working colorscheme.
-local palette = require 'ihtesham.palette'
+local palette_path = vim.fn.expand '~/.cache/matugen/nvim-colors.lua'
 
 return {
   'catppuccin/nvim',
@@ -76,7 +76,7 @@ return {
     }
 
     -- setup must be called before loading
-    if palette.load() then
+    if (vim.uv or vim.loop).fs_stat(palette_path) then
       vim.cmd.colorscheme 'wallpaper'
     else
       vim.cmd.colorscheme 'catppuccin-nvim'
