@@ -1,20 +1,18 @@
 [config]
-# Pick the most saturated candidate colour instead of the most dominant one.
-# Without this matugen may prompt on stdin when a wallpaper has several
-# candidates, which fails when it runs from the wallpaper service.
+fallback_color = "#ffbf9b"
+contrast = 0.0
+source_color_index = 0
+caching = false
 prefer = "saturation"
 
-# Read by quickshell/services/Colours.qml (flat JSON, hex strings).
 [templates.quickshell]
 input_path = '~/.config/matugen/templates/quickshell.json'
 output_path = '~/.cache/quickshell/colors.json'
 
-# Read by the lua hyprland config (require("scheme.current")).
 [templates.hyprland]
 input_path = '~/.config/matugen/templates/hyprland-scheme.lua'
 output_path = '~/.config/hypr/scheme/current.lua'
 
-# Read by nvim/colors/wallpaper.lua.
 [templates.neovim]
 input_path = "~/.config/matugen/templates/nvim-colors.lua"
 output_path = "~/.cache/matugen/nvim-colors.lua"

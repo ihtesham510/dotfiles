@@ -4,10 +4,6 @@ import Quickshell.Io
 import QtQuick
 import Qt.labs.folderlistmodel
 
-// The wallpaper library and the currently applied wallpaper.
-//
-// The background renderer (Wallpaper.qml) and the picker both read `current`
-// from here, so picking an image updates the desktop immediately.
 Singleton {
     id: root
 
@@ -15,11 +11,11 @@ Singleton {
     readonly property string defaultWallpaper: root.directory + "/anime girl.jpg"
     readonly property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell"
     readonly property string stateFile: root.cacheDir + "/wallpaper"
+    readonly property string schemeFile: root.cacheDir + "/scheme"
+    readonly property string applyScript: Quickshell.env("HOME") + "/.config/matugen/apply.sh"
 
     property string current: root.defaultWallpaper
 
-    // Restore the wallpaper picked last session. Quietly does nothing on the
-    // first run, before the state file exists.
     Process {
         id: loadState
         command: ["sh", "-c", "[ -f \"$1\" ] && cat \"$1\"", "sh", root.stateFile]
@@ -35,14 +31,9 @@ Singleton {
         }
     }
 
-    // Rebuild the Material palette for the current wallpaper. matugen writes
-    // ~/.cache/quickshell/colors.json (read by services/Colours.qml) and
-    // ~/.config/hypr/scheme/current.lua, then Hyprland is told to reload so
-    // window borders follow the wallpaper too. Missing matugen is not an
-    // error: the shell just keeps its fallback colours.
     Process {
         id: colours
-        command: ["sh", "-c", "mkdir -p \"$1\"; command -v matugen >/dev/null 2>&1 || exit 0; " + "matugen image \"$2\" --mode dark --type scheme-smart --source-color-index 0 >/dev/null 2>&1 || exit 1; " + "command -v hyprctl >/dev/null 2>&1 && hyprctl reload >/dev/null 2>&1", "sh", root.cacheDir, root.current]
+        command: ["sh", "-c", "mkdir -p \"$1\"; command -v matugen >/dev/null 2>&1 || exit 0; scheme=$(cat \"$3\" 2>/dev/null); [ -n \"$scheme\" ] || scheme=scheme-tonal-spot; sh \"$4\" \"$2\" \"$scheme\" >/dev/null 2>&1 || exit 1; " + "command -v hyprctl >/dev/null 2>&1 && hyprctl reload >/dev/null 2>&1", "sh", root.cacheDir, root.current, root.schemeFile, root.applyScript]
 
         onExited: Colours.refresh()
     }
@@ -70,7 +61,6 @@ Singleton {
         sortCaseSensitive: false
     }
 
-    // Every wallpaper as { name, path }.
     function all(): var {
         const out = [];
         for (let i = 0; i < files.count; i++)
@@ -81,7 +71,6 @@ Singleton {
         return out;
     }
 
-    // Case-insensitive filename search.
     function search(query: string): var {
         const list = root.all();
         const q = query.trim().toLowerCase();

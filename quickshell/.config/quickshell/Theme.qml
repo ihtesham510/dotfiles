@@ -3,15 +3,7 @@ import Quickshell
 import QtQuick
 import qs.services
 
-// Shared visual constants. One place to change colors, sizes and timings.
-//
-// Colours are Material 3 roles taken from the wallpaper by matugen (see
-// services/Colours.qml). The second argument of each lookup is the old
-// hand-picked colour, used until a palette exists, so the shell is never
-// unstyled.
 Singleton {
-    // Notch / panel fill. surfaceContainer is the elevated surface Material
-    // uses for floating sheets.
     readonly property color background: Colours.role("surface_container", "black")
 
     readonly property color foreground: Colours.role("on_surface", "white")
@@ -21,8 +13,6 @@ Singleton {
     readonly property color inactive: Colours.role("outline_variant", "#3a3a3a")
     readonly property color occupied: Colours.role("outline", "#888888")
 
-    // Semantic colours. success is a custom matugen colour blended towards the
-    // wallpaper hue; error is the Material error role.
     readonly property color success: Colours.role("success", "#98c379")
     readonly property color danger: Colours.role("error", "#e06c75")
 
@@ -70,6 +60,11 @@ Singleton {
     readonly property int powerPanelWidth: 700
     readonly property int powerPanelHeight: 120
     readonly property int powerPanelRadius: 20
+
+    // Scheme changer
+    readonly property int schemeChangerWidth: 420
+    readonly property int schemeChangerHeight: 540
+    readonly property int schemeChangerRadius: 20
 
     // Volume OSD (same height as the collapsed notch, a bit wider)
     readonly property int volumeWidth: 320

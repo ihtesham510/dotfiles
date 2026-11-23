@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import qs
 import qs.notch.launcher
+import qs.notch.schemeChanger
 import qs.notch.wallpaper
 import qs.services
 
@@ -17,6 +18,7 @@ PanelWindow {
     readonly property bool volumeOpen: NotchState.mode === NotchState.Mode.VolumeMeter
     readonly property bool brightnessOpen: NotchState.mode === NotchState.Mode.BrightnessMeter
     readonly property bool powerPanelOpen: NotchState.mode === NotchState.Mode.PowerCenter
+    readonly property bool schemeChangerOpen: NotchState.mode === NotchState.Mode.SchemeChanger
 
     readonly property bool panelOpen: NotchState.mode !== NotchState.Mode.Idle && NotchState.mode !== NotchState.Mode.Expand && NotchState.mode !== NotchState.Mode.Hoverd
 
@@ -56,6 +58,11 @@ PanelWindow {
     onBrightnessOpenChanged: {
         if (brightnessOpen)
             latchPanel(Theme.brightnessWidth, Theme.brightnessHeight, Theme.brightnessRadius);
+    }
+
+    onSchemeChangerOpenChanged: {
+        if (schemeChangerOpen)
+            latchPanel(Theme.schemeChangerWidth, Theme.schemeChangerHeight, Theme.schemeChangerRadius);
     }
 
     function checkHover(): void {
@@ -149,7 +156,7 @@ PanelWindow {
     }
 
     HyprlandFocusGrab {
-        active: root.launcherOpen || root.wallpaperOpen || root.expanded || root.powerPanelOpen
+        active: root.launcherOpen || root.wallpaperOpen || root.expanded || root.powerPanelOpen || root.schemeChangerOpen
         windows: [root]
         onCleared: NotchState.close()
     }
@@ -167,6 +174,9 @@ PanelWindow {
                 break;
             case "wallpaper":
                 NotchState.setMode(NotchState.Mode.ExpandedWide);
+                break;
+            case "schemechanger":
+                NotchState.setMode(NotchState.Mode.SchemeChanger);
                 break;
             case "expand":
                 NotchState.setMode(NotchState.Mode.Expand);
@@ -206,6 +216,8 @@ PanelWindow {
                 return "brightness";
             case NotchState.Mode.PowerCenter:
                 return "power";
+            case NotchState.Mode.SchemeChanger:
+                return "schemechanger";
             default:
                 return "idle";
             }
@@ -364,6 +376,19 @@ PanelWindow {
             anchors.fill: parent
             visible: opacity > 0
             opacity: root.brightnessOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.contentFadeDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
+            onCloseRequested: NotchState.close()
+        }
+
+        SchemeChanger {
+            anchors.fill: parent
+            visible: opacity > 0
+            opacity: root.schemeChangerOpen ? (root.panelAmount >= 0.5 ? 1 : 0) : 0
             Behavior on opacity {
                 NumberAnimation {
                     duration: Theme.contentFadeDuration

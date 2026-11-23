@@ -13,6 +13,7 @@ Singleton {
         VolumeMeter,
         BrightnessMeter,
         ControlCenter,
+        SchemeChanger,
         PowerCenter
     }
 
