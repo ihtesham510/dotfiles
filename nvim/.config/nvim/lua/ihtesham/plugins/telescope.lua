@@ -22,7 +22,7 @@ return {
       defaults = {
         color_devicons = true,
         initial_mode = 'normal',
-        file_ignore_patterns = { '.git', 'target', 'node_modules' },
+        file_ignore_patterns = { '^.git/', '%.git/', 'target/', 'node_modules/' },
         prompt_prefix = '     ',
         selection_caret = ' ❯ ',
         sorting_strategy = 'ascending',
@@ -62,6 +62,12 @@ return {
       pickers = {
         find_files = {
           hidden = true,
+        },
+        live_grep = {
+          additional_args = { '--hidden' },
+        },
+        grep_string = {
+          additional_args = { '--hidden' },
         },
       },
       extensions = {
