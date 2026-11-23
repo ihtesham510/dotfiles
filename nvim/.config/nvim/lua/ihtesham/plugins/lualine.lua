@@ -14,10 +14,10 @@ local function build_theme()
   if p then
     colors = {
       normal = p.primary,
-      insert = p.syntax_green,
+      insert = p.secondary,
       visual = p.primary_container,
       visual_fg = p.on_primary_container,
-      command = p.syntax_yellow,
+      command = p.tertiary,
       replace = p.error,
       fg = p.on_surface,
       -- "#00rrggbb" is fully transparent in Neovim, so the wallpaper shows through

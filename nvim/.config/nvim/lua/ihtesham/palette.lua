@@ -49,49 +49,10 @@ function M.load()
   return out
 end
 
--- Only used when matugen did not emit a syntax_* colour (for example an old
--- colors.json written before the custom colours were added to the template).
--- Falls back to Material roles; nothing is computed. Each entry lists the
--- roles to try in order, first one present wins.
-local SYNTAX_FALLBACK = {
-  red = { 'error' },
-  green = { 'secondary', 'primary' },
-  yellow = { 'tertiary', 'primary' },
-  blue = { 'primary' },
-  magenta = { 'tertiary', 'primary' },
-  cyan = { 'secondary', 'primary' },
-}
-
---- Role-based fallback for any syntax_* colour.
---- @param p table<string, string>
---- @return table<string, string>
-function M.syntax(p)
-  local out = {}
-  for name, roles in pairs(SYNTAX_FALLBACK) do
-    for _, role in ipairs(roles) do
-      if p[role] then
-        out['syntax_' .. name] = p[role]
-        break
-      end
-    end
-  end
-  return out
-end
-
---- Palette from matugen. syntax_* colours supplied by matugen are used as-is;
---- the role fallback only fills in the ones that are missing.
+--- Palette written by matugen, or nil when it does not exist.
 --- @return table<string, string>|nil
 function M.get()
-  local p = M.load()
-  if not p then
-    return nil
-  end
-  for k, v in pairs(M.syntax(p)) do
-    if not p[k] then
-      p[k] = v
-    end
-  end
-  return p
+  return M.load()
 end
 
 --- Blend two hex colours; a=1 is all c1.
